@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${parking.name} + ' - Parking Details'">Parking Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .parking-details {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            max-width: 600px;
+        }
+        .parking-info {
+            margin-bottom: 20px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 100px;
+        }
+        .value {
+            display: inline-block;
+        }
+        .available {
+            color: green;
+            font-weight: bold;
+        }
+        .full {
+            color: red;
+            font-weight: bold;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${parking.name}">Parking Name</h1>
+
+<div class="parking-details">
+    <div class="parking-info">
+        <span class="label">Location:</span>
+        <span class="value" th:text="${parking.location}">Downtown</span>
+    </div>
+
+    <div class="parking-info">
+        <span class="label">Total Spots:</span>
+        <span class="value" th:text="${parking.totalSpots}">50</span>
+    </div>
+
+    <div class="parking-info">
+        <span class="label">Available:</span>
+        <span class="value"
+              th:class="${parking.availableSpots > 0 ? 'available' : 'full'}"
+              th:text="${parking.availableSpots}">10</span>
+    </div>
+
+    <div class="parking-info">
+        <span class="label">Status:</span>
+        <span class="value"
+              th:class="${parking.availableSpots > 0 ? 'available' : 'full'}"
+              th:text="${parking.availableSpots > 0 ? 'Available' : 'Full'}">Available</span>
+    </div>
+</div>
+
+<a href="/" class="back-link">← Back to All Parkings</a>
+</body>
+</html>
+```

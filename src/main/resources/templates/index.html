@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parking Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .parking-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .parking-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            width: 250px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .parking-card:hover {
+            background-color: #f5f5f5;
+        }
+        .parking-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .parking-location {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .parking-spots {
+            color: #333;
+        }
+        .available {
+            color: green;
+        }
+        .full {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>Available Parking Locations</h1>
+
+<div class="parking-list">
+    <div th:each="parking : ${parkings}" class="parking-card" th:onclick="'window.location.href=\'/parkings/' + ${parking.id} + '\''">
+        <div class="parking-name" th:text="${parking.name}">Parking Name</div>
+        <div class="parking-location" th:text="${parking.location}">Location</div>
+        <div class="parking-spots">
+                <span th:class="${parking.availableSpots > 0 ? 'available' : 'full'}"
+                      th:text="${parking.availableSpots + ' / ' + parking.totalSpots + ' spots available'}">
+                    10/50 spots available
+                </span>
+        </div>
+    </div>
+</div>
+
+<div th:if="${parkings.empty}">
+    <p>No parking locations available.</p>
+</div>
+</body>
+</html>
