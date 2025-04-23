@@ -1,72 +1,267 @@
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Parking Tracker</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
-        }
-        h1 {
+            padding: 0;
+            background-color: #f8f9fa;
             color: #333;
         }
-        .parking-list {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        .user-name {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 24px;
+        }
+        .search-filter-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-box {
+            display: flex;
+            flex: 1;
+            min-width: 250px;
+            max-width: 500px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+        .search-button {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .filter-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .filter-checkbox {
+            margin-right: 5px;
+        }
+        .refresh-button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .parking-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
         .parking-card {
             border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            width: 250px;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
         .parking-card:hover {
-            background-color: #f5f5f5;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .parking-name {
             font-weight: bold;
             font-size: 18px;
             margin-bottom: 10px;
+            color: #2c3e50;
         }
         .parking-location {
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .parking-spots {
-            color: #333;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-weight: 500;
         }
         .available {
-            color: green;
+            color: #27ae60;
+            font-weight: bold;
         }
         .full {
-            color: red;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-primary {
+            background-color: #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #666;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .user-actions {
+                margin-top: 15px;
+            }
+            .search-filter-container {
+                flex-direction: column;
+            }
+            .search-box {
+                max-width: 100%;
+            }
+            .filter-options {
+                margin-top: 10px;
+                justify-content: center;
+            }
         }
     </style>
+    <script>
+        function filterAvailable(checked) {
+            const cards = document.querySelectorAll('.parking-card');
+            cards.forEach(card => {
+                const spotsText = card.querySelector('.parking-spots span').textContent;
+                const isAvailable = card.querySelector('.parking-spots span').classList.contains('available');
+
+                if (checked && !isAvailable) {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = 'flex';
+                }
+            });
+        }
+    </script>
 </head>
 <body>
-<h1>Available Parking Locations</h1>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-parking"></i> SpaceNow - Parking Tracker</h1>
+        <div class="user-actions">
+            <span class="user-name" sec:authentication="name"></span>
+            <div sec:authorize="hasRole('ADMIN')" style="display: inline;">
+                <a th:href="@{/admin}" class="btn btn-primary"><i class="fas fa-cog"></i> Admin</a>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
 
-<div class="parking-list">
-    <div th:each="parking : ${parkings}" class="parking-card" th:onclick="'window.location.href=\'/parkings/' + ${parking.id} + '\''">
-        <div class="parking-name" th:text="${parking.name}">Parking Name</div>
-        <div class="parking-location" th:text="${parking.location}">Location</div>
-        <div class="parking-spots">
+    <div class="search-filter-container">
+        <form class="search-box" action="/" method="get">
+            <input type="text" name="location" class="search-input" placeholder="Search by location..." th:value="${param.location}">
+            <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="filter-options">
+            <div>
+                <input type="checkbox" id="available-only" class="filter-checkbox" onchange="filterAvailable(this.checked)">
+                <label for="available-only">Show available only</label>
+            </div>
+            <button type="button" onclick="window.location.reload()" class="refresh-button">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <div class="parking-list">
+        <div th:each="parking : ${parkings}" class="parking-card" th:onclick="'window.location.href=\'/parkings/' + ${parking.id} + '\''">
+            <div class="parking-name" th:text="${parking.name}">Parking Name</div>
+            <div class="parking-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span th:text="${parking.location}">Location</span>
+            </div>
+            <div class="parking-spots">
                 <span th:class="${parking.availableSpots > 0 ? 'available' : 'full'}"
                       th:text="${parking.availableSpots + ' / ' + parking.totalSpots + ' spots available'}">
                 </span>
+            </div>
         </div>
     </div>
-</div>
 
-<div th:if="${parkings.empty}">
-    <p>No parking locations available.</p>
+    <div th:if="${#lists.isEmpty(parkings)}" class="no-results">
+        <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+        <p>No parking locations available.</p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Parking Tracker | Find the best parking spots in your area</p>
+        <p>Real-time parking availability updates every 10 minutes</p>
+    </div>
 </div>
 </body>
 </html>
