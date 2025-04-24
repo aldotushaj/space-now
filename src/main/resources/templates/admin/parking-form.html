@@ -96,7 +96,7 @@
 
         <div class="form-group">
             <label for="availableSpots">Available Spots</label>
-            <input type="number" id="availableSpots" th:field="*{availableSpots}" min="0" th:max="*{totalSpots}" required>
+            <input type="number" id="availableSpots" th:field="*{availableSpots}" min="0" th:max="${totalSpots}" required>
         </div>
 
         <div class="btn-container">

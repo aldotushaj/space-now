@@ -57,12 +57,15 @@ public class ParkingController {
         model.addAttribute("parkings", parkings);
         return "admin/dashboard";
     }
+    
 
     // Show form to create new parking
     @GetMapping("/admin/parkings/create")
     @PreAuthorize("hasRole('ADMIN')")
     public String showCreateForm(Model model) {
-        model.addAttribute("parking", new Parking());
+        Parking parking = new Parking();
+        parking.setTotalSpots(1);
+        model.addAttribute("parking", parking);
         return "admin/parking-form";
     }
 
