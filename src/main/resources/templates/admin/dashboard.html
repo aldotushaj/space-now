@@ -73,7 +73,6 @@
     <div class="user-info">
         <span sec:authentication="name"></span>
         <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
-        <a th:href="@{/}" class="btn btn-primary">View Site</a>
     </div>
 </div>
 
@@ -81,7 +80,10 @@
 </div>
 
 <div style="margin-bottom: 20px;">
+    <a th:href="@{/}" class="btn btn-danger">Go back</a>
     <a th:href="@{/admin/parkings/create}" class="btn btn-primary">Add New Parking</a>
+
+
 </div>
 
 <table>

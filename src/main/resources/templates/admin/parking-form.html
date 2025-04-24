@@ -91,12 +91,12 @@
 
         <div class="form-group">
             <label for="totalSpots">Total Spots</label>
-            <input type="number" id="totalSpots" th:field="*{totalSpots}" min="1" required>
+            <input type="number" id="totalSpots" th:field="*{totalSpots}" min="1"  required>
         </div>
 
         <div class="form-group">
             <label for="availableSpots">Available Spots</label>
-            <input type="number" id="availableSpots" th:field="*{availableSpots}" min="0" th:max="${totalSpots}" required>
+            <input type="number" id="availableSpots" th:field="*{availableSpots}" min="0" th:max="*{totalSpots}" required>
         </div>
 
         <div class="btn-container">
@@ -105,6 +105,27 @@
         </div>
     </form>
 </div>
+
+
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+const totalSpotsInput = document.getElementById('totalSpots');
+const availableSpotsInput = document.getElementById('availableSpots');
+const isNewParking = [[${parking.id == null}]]; // Only for new records
+
+if (isNewParking && totalSpotsInput && availableSpotsInput) {
+// Sync availableSpots when totalSpots changes
+totalSpotsInput.addEventListener('change', function() {
+availableSpotsInput.value = this.value;
+availableSpotsInput.max = this.value;
+});
+
+// Initialize availableSpots = totalSpots on page load
+availableSpotsInput.value = totalSpotsInput.value;
+availableSpotsInput.max = totalSpotsInput.value;
+}
+});
+</script>
 
 </body>
 </html>

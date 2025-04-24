@@ -57,7 +57,7 @@ public class ParkingController {
         model.addAttribute("parkings", parkings);
         return "admin/dashboard";
     }
-    
+
 
     // Show form to create new parking
     @GetMapping("/admin/parkings/create")

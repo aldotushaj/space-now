@@ -53,8 +53,8 @@ public class ParkingService {
     }
 
 
-    //Update available spots every 10 min
-    @Scheduled(fixedRate = 600000) // 10 minutes (600,000 ms)
+    //Update available spots every 30 seconds
+    @Scheduled(fixedRate = 30000) // 30 sec  (30,000 ms)
     public void updateAvailableSpotsRandomly() {
         List<Parking> parkings = parkingRepository.findAll();
         Random random = new Random();
